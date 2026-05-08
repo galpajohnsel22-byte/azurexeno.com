@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Azure Xeno</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
+<style>
+
+/* =========================
+ROOT COLORS
+========================= */
+:root{
+  --blue:#006eff;
+  --blue2:#00b7ff;
+  --dark:#020817;
+}
+
+/* =========================
+RESET
+========================= */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:'Orbitron',sans-serif;
+  color:white;
+  overflow-x:hidden;
+
+  background:
+  linear-gradient(
+    180deg,
+    #01040b 0%,
+    #020817 20%,
+    #031326 40%,
+    #041a33 60%,
+    #020817 80%,
+    #01040b 100%
+  );
+
+  min-height:100vh;
+}
+
+/* =========================
+DARK BLUE GLOW
+========================= */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+
+  background:
+  radial-gradient(circle at top left,
+  rgba(0,140,255,.18),
+  transparent 30%),
+
+  radial-gradient(circle at top right,
+  rgba(0,89,255,.12),
+  transparent 25%),
+
+  radial-gradient(circle at bottom center,
+  rgba(0,195,255,.10),
+  transparent 35%);
+
+  z-index:-2;
+}
+
+/* =========================
+SCROLLBAR
+========================= */
+::-webkit-scrollbar{
+  width:8px;
+}
+
+::-webkit-scrollbar-track{
+  background:#06101d;
+}
+
+::-webkit-scrollbar-thumb{
+  background:var(--blue);
+  border-radius:10px;
+}
+
+/* =========================
+PARTICLES
+========================= */
+.particle{
+  position:fixed;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:var(--blue2);
+  box-shadow:0 0 12px var(--blue2);
+  opacity:.4;
+  animation:float linear infinite;
+  z-index:-1;
+}
+
+@keyframes float{
+  from{
+    transform:translateY(100vh);
+  }
+  to{
+    transform:translateY(-100vh);
+  }
+}
+
+/* =========================
+HEADER
+========================= */
+header{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:1rem 2rem;
+
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(15px);
+
+  border-bottom:1px solid rgba(0,110,255,.2);
+
+  z-index:999;
+}
+
+/* =========================
+LOGO
+========================= */
+.logo{
+  display:flex;
+  align-items:center;
+  gap:.8rem;
+  cursor:pointer;
+  transition:.3s;
+}
+
+.logo:hover{
+  transform:scale(1.05);
+}
+
+.logo img{
+  width:58px;
+  height:58px;
+  object-fit:contain;
+
+  filter:
+  drop-shadow(0 0 15px rgba(0,110,255,.8))
+  drop-shadow(0 0 35px rgba(0,183,255,.5));
+
+  transition:.4s;
+}
+
+.logo:hover img{
+  transform:rotate(-5deg) scale(1.08);
+}
+
+.logo-text{
+  font-size:1.2rem;
+  font-weight:900;
+  letter-spacing:2px;
+}
+
+.logo-text .azure{
+  color:white;
+}
+
+.logo-text .xeno{
+  color:var(--blue2);
+
+  text-shadow:
+  0 0 10px var(--blue2),
+  0 0 20px var(--blue2);
+}
+
+/* =========================
+NAVIGATION
+========================= */
+nav{
+  display:flex;
+  gap:1rem;
+}
+
+nav a{
+  position:relative;
+  overflow:hidden;
+
+  text-decoration:none;
+  color:white;
+
+  padding:.8rem 1.5rem;
+
+  border-radius:50px;
+
+  border:2px solid rgba(0,110,255,.2);
+
+  transition:.3s;
+}
+
+nav a:hover,
+nav a.active{
+
+  background:
+  linear-gradient(
+    135deg,
+    var(--blue),
+    var(--blue2)
+  );
+
+  transform:translateY(-3px);
+
+  box-shadow:
+  0 0 20px rgba(0,110,255,.6),
+  0 0 40px rgba(0,183,255,.3);
+}
+
+/* SHINE */
+nav a::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-100%;
+  width:100%;
+  height:100%;
+
+  background:
+  linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.35),
+    transparent
+  );
+
+  transition:.5s;
+}
+
+nav a:hover::before{
+  left:100%;
+}
+
+/* =========================
+MENU BUTTON
+========================= */
+#menu-btn{
+  display:none;
+  flex-direction:column;
+  gap:5px;
+  cursor:pointer;
+  z-index:1001;
+}
+
+#menu-btn span{
+  width:26px;
+  height:3px;
+  border-radius:10px;
+  background:var(--blue2);
+}
+
+/* =========================
+SECTIONS
+========================= */
+.section{
+  min-height:100vh;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+
+  text-align:center;
+
+  padding:7rem 1.5rem 4rem;
+
+  opacity:0;
+  transform:translateY(50px);
+
+  transition:1s;
+}
+
+.section.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.section h1{
+  font-size:5rem;
+  margin-bottom:1.5rem;
+
+  text-shadow:
+  0 0 15px rgba(255,255,255,.1),
+  0 0 40px rgba(0,110,255,.7),
+  0 0 70px rgba(0,183,255,.35);
+}
+
+.section h1 span{
+  color:var(--blue2);
+}
+
+.section p{
+  max-width:700px;
+  font-size:1.1rem;
+  line-height:1.9;
+  opacity:.92;
+}
+
+/* =========================
+BUTTONS
+========================= */
+.btn{
+  position:relative;
+  overflow:hidden;
+
+  margin-top:2rem;
+
+  padding:1rem 2.4rem;
+
+  border:none;
+  border-radius:50px;
+
+  background:
+  linear-gradient(
+    135deg,
+    var(--blue),
+    var(--blue2)
+  );
+
+  color:white;
+
+  font-family:'Orbitron',sans-serif;
+  font-weight:700;
+
+  cursor:pointer;
+
+  transition:.3s;
+}
+
+.btn:hover{
+  transform:translateY(-5px);
+
+  box-shadow:
+  0 0 25px rgba(0,110,255,.7),
+  0 0 50px rgba(0,183,255,.35);
+}
+
+/* =========================
+RIPPLE EFFECT
+========================= */
+.ripple{
+  position:absolute;
+  border-radius:50%;
+  transform:scale(0);
+
+  background:rgba(255,255,255,.5);
+
+  animation:ripple-animation .6s linear;
+
+  pointer-events:none;
+}
+
+@keyframes ripple-animation{
+  to{
+    transform:scale(4);
+    opacity:0;
+  }
+}
+
+/* =========================
+FOOTER
+========================= */
+footer{
+  position:fixed;
+  bottom:16px;
+  left:50%;
+  transform:translateX(-50%);
+
+  display:flex;
+  gap:1rem;
+
+  z-index:999;
+}
+
+.social{
+  position:relative;
+  overflow:hidden;
+
+  width:48px;
+  height:48px;
+
+  border-radius:50%;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  background:rgba(255,255,255,.04);
+
+  border:1px solid rgba(0,110,255,.2);
+
+  backdrop-filter:blur(10px);
+
+  transition:.3s;
+}
+
+.social:hover{
+  background:
+  linear-gradient(
+    135deg,
+    var(--blue),
+    var(--blue2)
+  );
+
+  transform:translateY(-5px) scale(1.08);
+
+  box-shadow:
+  0 0 20px rgba(0,110,255,.7),
+  0 0 40px rgba(0,183,255,.35);
+}
+
+.social svg{
+  width:20px;
+  fill:white;
+}
+
+/* =========================
+MOBILE
+========================= */
+@media(max-width:768px){
+
+  body{
+    overflow-x:hidden;
+  }
+
+  header{
+    padding:1rem;
+  }
+
+  #menu-btn{
+    display:flex;
+  }
+
+  nav{
+    position:fixed;
+    top:0;
+    right:-100%;
+
+    width:75%;
+    max-width:320px;
+    height:100vh;
+
+    background:rgba(2,8,20,.97);
+
+    backdrop-filter:blur(18px);
+
+    flex-direction:column;
+    align-items:flex-start;
+
+    padding:7rem 1.5rem 2rem;
+
+    gap:1rem;
+
+    transition:.4s ease;
+
+    border-left:1px solid rgba(0,110,255,.2);
+
+    z-index:1000;
+  }
+
+  nav.show{
+    right:0;
+  }
+
+  nav a{
+    width:100%;
+    text-align:left;
+  }
+
+  .section{
+    padding:7rem 1rem 4rem;
+  }
+
+  .section h1{
+    font-size:2.5rem;
+    line-height:1.2;
+  }
+
+  .section p{
+    font-size:.95rem;
+  }
+
+  .logo img{
+    width:44px;
+    height:44px;
+  }
+
+  .logo-text{
+    font-size:.9rem;
+  }
+
+  .btn{
+    width:100%;
+    max-width:260px;
+  }
+
+  footer{
+    bottom:12px;
+    gap:.7rem;
+  }
+
+  .social{
+    width:42px;
+    height:42px;
+  }
+
+}
+
+/* =========================
+EXTRA SMALL
+========================= */
+@media(max-width:480px){
+
+  .section h1{
+    font-size:2.1rem;
+  }
+
+}
+
+#cookie-box{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(2,8,23,.95);
+  border:1px solid rgba(0,110,255,.3);
+  backdrop-filter:blur(10px);
+  padding:1rem 1.2rem;
+  border-radius:15px;
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  z-index:9999;
+}
+
+#cookie-box button{
+  padding:.6rem 1rem;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  background:linear-gradient(135deg,#006eff,#00b7ff);
+  color:white;
+  font-weight:700;
+}
+
+#cookie-box.hide{
+  opacity:0;
+  transform:translateX(-50%) translateY(20px);
+  transition:.4s;
+}
+
+.members-container{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:1.5rem;
+  margin-top:2rem;
+  width:90%;
+  max-width:1000px;
+}
+
+.member-card{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(0,110,255,.2);
+  border-radius:15px;
+  padding:1rem;
+  text-align:center;
+  transition:.3s;
+  backdrop-filter:blur(10px);
+}
+
+.member-card:hover{
+  transform:translateY(-10px);
+  box-shadow:0 0 25px rgba(0,110,255,.4);
+}
+
+.member-card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  border-radius:12px;
+  margin-bottom:.8rem;
+  border:1px solid rgba(0,183,255,.3);
+}
+
+.member-card h3{
+  margin:.3rem 0;
+  font-size:1rem;
+}
+
+.member-card p{
+  font-size:.85rem;
+  opacity:.8;
+}
+
+/* =========================
+GLITCH LOGO
+========================= */
+
+.glitch-logo{
+  position:relative;
+  display:inline-block;
+  animation:glitchMove 2s infinite;
+}
+
+/* duplicate layers */
+.glitch-logo::before,
+.glitch-logo::after{
+  content:attr(data-text);
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  overflow:hidden;
+  z-index:-1;
+}
+
+/* blue layer */
+.glitch-logo::before{
+  color:#00b7ff;
+  animation:glitchTop 1.5s infinite;
+  transform:translate(2px,0);
+}
+
+/* deep blue layer */
+.glitch-logo::after{
+  color:#006eff;
+  animation:glitchBottom 1.5s infinite;
+  transform:translate(-2px,0);
+}
+
+/* main shake */
+@keyframes glitchMove{
+  0%,100%{transform:translate(0);}
+  20%{transform:translate(1px,-1px);}
+  40%{transform:translate(-1px,1px);}
+  60%{transform:translate(1px,1px);}
+  80%{transform:translate(-1px,-1px);}
+}
+
+/* slice top */
+@keyframes glitchTop{
+  0%,100%{clip-path:inset(0);}
+  25%{clip-path:inset(10% 0 70% 0);}
+  50%{clip-path:inset(80% 0 5% 0);}
+  75%{clip-path:inset(40% 0 40% 0);}
+}
+
+/* slice bottom */
+@keyframes glitchBottom{
+  0%,100%{clip-path:inset(0);}
+  25%{clip-path:inset(70% 0 10% 0);}
+  50%{clip-path:inset(20% 0 60% 0);}
+  75%{clip-path:inset(50% 0 30% 0);}
+}
+
+</style>
+</head>
+
+</div
+
+<!-- COOKIE NOTICE -->
+<div id="cookie-box">
+  <p>🍪 We use cookies to improve your experience on Azure Xeno.</p>
+  <button id="accept-cookies">Accept</button>
+</div>
+
+<body>
+<audio id="bg-music" loop>
+  <source src="bgm.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="click-sound" src="click.mp3" preload="auto"></audio>
+
+<!-- PARTICLES -->
+<script>
+const cookieBox = document.getElementById('cookie-box');
+const acceptBtn = document.getElementById('accept-cookies');
+
+if (localStorage.getItem('cookiesAccepted')) {
+  cookieBox.style.display = 'none';
+}
+
+acceptBtn.addEventListener('click', () => {
+  cookieBox.classList.add('hide');
+
+  setTimeout(() => {
+    cookieBox.style.display = 'none';
+  }, 400);
+
+  localStorage.setItem('cookiesAccepted', 'true');
+});
+
+for(let i=0;i<50;i++){
+
+  const p=document.createElement('div');
+
+  p.classList.add('particle');
+
+  p.style.left=Math.random()*100+'vw';
+
+  p.style.animationDuration=(5+Math.random()*10)+'s';
+
+  p.style.opacity=Math.random();
+
+  document.body.appendChild(p);
+
+}
+
+// BACKGROUND MUSIC START (after user interaction)
+const bgMusic = document.getElementById('bg-music');
+
+function startMusic(){
+  bgMusic.volume = 0.4; // adjust volume
+  bgMusic.play().catch(()=>{});
+  
+  // remove listeners after first play
+  document.removeEventListener('click', startMusic);
+  document.removeEventListener('scroll', startMusic);
+  document.removeEventListener('keydown', startMusic);
+}
+
+// must wait for user action (browser rule)
+document.addEventListener('click', startMusic);
+document.addEventListener('scroll', startMusic);
+document.addEventListener('keydown', startMusic);
+
+</script>
+
+<!-- HEADER -->
+<header>
+
+<div class="logo-text glitch-logo" data-text="AZURE XENO">
+  <span class="azure">AZURE</span>
+  <span class="xeno"> XENO</span>
+
+</div>
+
+<!-- MENU BUTTON -->
+<div id="menu-btn">
+
+<span></span>
+<span></span>
+<span></span>
+
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+
+<a href="#home" class="active">HOME</a>
+<a href="#management">MANAGEMENT</a>
+<a href="#members">MEMBERS</a>
+<a href="#apply">APPLY NOW!</a>
+
+</nav>
+
+</header>
+
+<!-- HOME -->
+<section class="section show" id="home">
+
+<h1>AZURE <span>XENO</span></h1>
+
+<p>
+Welcome to the elite gaming organization built for champions.
+Precision. Dominance. Legacy.
+</p>
+
+<button class="btn ripple-btn">
+JOIN NOW!
+</button>
+
+</section>
+
+<!-- MANAGEMENT -->
+<section class="section" id="management">
+
+<h1>CLAN <span>MANAGEMENT</span></h1>
+
+<div class="members-container">
+
+  <div class="member-card">
+    <img src="founder.jpg" alt="Member 1">
+    <h3>Rich</h3>
+    <p>Founder</p>
+  </div>
+
+  <div class="member-card">
+    <img src="cofounder.jpeg" alt="Member 3">
+    <h3>Yeya</h3>
+    <p>Co-founder</p>
+  </div>
+
+  <div class="member-card">
+    <img src="headad.jpg" alt="Member 4">
+    <h3>Zoen</h3>
+    <p>Head Admin</p>
+  </div>
+  
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>Aika</h3>
+    <p>Admin</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>Lysa</h3>
+    <p>Admin</p>
+  </div>
+
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>Smith</h3>
+    <p>Admin</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>Bravo</h3>
+    <p>Admin | t.o Handler</p>
+  </div>
+  
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>Mark</h3>
+    <p>Admin</p>
+  </div>
+
+
+</div>
+
+</section>
+
+<!-- MEMBERS -->
+<section class="section" id="members">
+
+<h1>OFFICIAL CLAN <span>MEMBERS</span></h1>
+
+<div class="members-container">
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+  
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+  
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+  
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+  
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+    <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+  <div class="member-card">
+    <img src="member1.jpg" alt="Member 1">
+    <h3>IGN</h3>
+    <p>CASUAL | MP</p>
+  </div>
+
+</div>
+
+</section>
+
+<!-- APPLY -->
+<!-- APPLY SECTION -->
+<section class="section" id="apply">
+
+<div class="form-header">
+  <h1>AZURE XENO APPLICATION</h1>
+  <p>Fill out the form carefully. Incomplete or fake applications will be ignored.</p>
+</div>
+
+<div class="warning-box">
+⚠ Please ensure you meet the minimum requirements: Age 17+, Level 400+, and active player. If not applicable, type N/A.
+</div>
+
+<form class="join-form">
+
+  <input type="text" name="fullname" placeholder="Full Name *" required>
+
+  <input type="text" name="ign" placeholder="In-Game IGN *" required>
+
+  <input type="text" name="uid" placeholder="UID">
+
+  <input type="number" name="age" placeholder="Age (17+)" required>
+
+  <input type="number" name="level" placeholder="Player Level (400+)" required>
+
+  <select name="clan_or_commu" required>
+    <option value="">Clan or Community?</option>
+    <option>Clan</option>
+    <option>Community</option>
+  </select>
+
+  <select name="gamemode" required>
+    <option value="">Game Mode</option>
+    <option>MP</option>
+    <option>BR</option>
+    <option>Both</option>
+  </select>
+
+  <select name="playstyle" required>
+    <option value="">Casual or Competitive</option>
+    <option>Casual</option>
+    <option>Competitive</option>
+  </select>
+
+  <input type="date" name="birthday">
+
+  <input type="url" name="facebook" placeholder="Facebook Profile Link">
+
+  <select name="another_clan">
+    <option>In another clan?</option>
+    <option>No</option>
+    <option>Yes</option>
+  </select>
+
+  <label>
+    <input type="checkbox"required>I agree to clan rules</label>
+
+  <label>
+    <input type="checkbox"required>I accept the penalty system</label>
+
+  <textarea name="reason" placeholder="Why do you want to join?" required></textarea>
+
+  <button type="submit" class="btn ripple-btn">SUBMIT APPLICATION</button>
+
+</form>
+
+</section>
+
+<!-- APPLY STYLES -->
+<style>
+.warning-box{
+  padding:1rem;
+  border-left:4px solid #ffcc00;
+  background:rgba(255,204,0,.08);
+  margin:1rem auto;
+  font-size:.85rem;
+  max-width:600px;
+}
+
+.form-header{
+  text-align:center;
+  margin-bottom:1.5rem;
+}
+
+.form-header h1{
+  color:#00b7ff;
+  font-size:1.6rem;
+  text-shadow:0 0 20px rgba(0,183,255,.3);
+}
+
+.form-header p{
+  font-size:.85rem;
+  opacity:.7;
+}
+
+.join-form{
+  max-width:600px;
+  margin:auto;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+
+.join-form input,
+.join-form select,
+.join-form textarea{
+  padding:1rem;
+  border-radius:10px;
+  border:1px solid rgba(0,110,255,.3);
+  background:rgba(255,255,255,.05);
+  color:white;
+  outline:none;
+  transition:.3s ease;
+  font-family:'Orbitron',sans-serif;
+}
+
+.join-form input:focus,
+.join-form select:focus,
+.join-form textarea:focus{
+  transform:scale(1.02);
+  box-shadow:0 0 15px rgba(0,183,255,.25);
+  border-color:#00b7ff;
+}
+
+.join-form textarea{
+  min-height:120px;
+  resize:none;
+}
+
+label{
+  font-size:.85rem;
+  opacity:.9;
+}
+
+button{
+  padding:1rem;
+  border:none;
+  border-radius:50px;
+  background:linear-gradient(135deg,#006eff,#00b7ff);
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:1rem;
+  transition:.3s;
+  position:relative;
+  overflow:hidden;
+}
+
+button:hover{
+  transform:translateY(-3px);
+}
+
+/* SHINE EFFECT */
+button::after{
+  content:"";
+  position:absolute;
+  width:100%;
+  height:100%;
+  top:0;
+  left:-100%;
+  background:rgba(255,255,255,.2);
+  transition:.4s;
+}
+
+button:hover::after{
+  left:100%;
+}
+
+/* CENTER CONTAINER */
+.apply-container{
+  max-width:800px;
+  margin:auto;
+  padding:2rem;
+}
+
+/* FORM CARD STYLE (PC FIX) */
+.join-form{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(0,110,255,.2);
+  padding:2rem;
+  border-radius:18px;
+  backdrop-filter:blur(10px);
+
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+}
+
+/* FULL WIDTH ELEMENTS */
+.join-form textarea,
+.join-form button,
+.join-form label{
+  grid-column:1 / -1;
+}
+
+/* INPUTS */
+.join-form input,
+.join-form select,
+.join-form textarea{
+  width:100%;
+}
+
+/* PC IMPROVEMENT */
+@media (min-width: 900px){
+  .form-header h1{
+    font-size:2rem;
+  }
+
+  .warning-box{
+    font-size:.9rem;
+  }
+}
+
+/* MOBILE FIX */
+@media (max-width: 768px){
+  .join-container{
+    padding:1rem;
+  }
+
+  .join-form{
+    grid-template-columns:1fr;
+    padding:1.2rem;
+  }
+} 8
+
+</style>
+
+<!-- APPLY SCRIPT -->
+<script>
+const form = document.querySelector('.join-form');
+
+form.addEventListener('submit', function(e) {
+  e.preventDefault();
+
+  const age = parseInt(form.querySelector('input[name="age"]').value);
+  const level = parseInt(form.querySelector('input[name="level"]').value);
+
+  if(age < 17){
+    showMessage("❌ You must be 17 years old or above.");
+    return;
+  }
+
+  if(level < 400){
+    showMessage("❌ Minimum level required is 400+.");
+    return;
+  }
+
+  showMessage("✅ Application submitted successfully!");
+  form.reset();
+});
+
+function showMessage(text){
+  let msg = document.createElement('div');
+
+  msg.innerText = text;
+
+  msg.style.position = "fixed";
+  msg.style.bottom = "20px";
+  msg.style.left = "50%";
+  msg.style.transform = "translateX(-50%)";
+
+  msg.style.padding = "1rem 1.5rem";
+  msg.style.borderRadius = "12px";
+
+  msg.style.background = "rgba(0,0,0,.85)";
+  msg.style.border = "1px solid #00b7ff";
+  msg.style.color = "white";
+
+  msg.style.zIndex = "9999";
+  msg.style.fontFamily = "Orbitron";
+
+  document.body.appendChild(msg);
+
+  setTimeout(() => {
+    msg.remove();
+  }, 3000);
+}
+</script>
+
+<!-- FOOTER -->
+<footer>
+
+<a class="social" href="https://www.facebook.com/share/1L65kc9ZPX/" target="_blank">
+
+<svg viewBox="0 0 24 24">
+<path d="M22 12A10 10 0 1010.5 21.9v-7H8v-2.9h2.5V9.8c0-2.5 1.5-3.8 3.7-3.8 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.5v1.9h2.8L16 15h-2.4v7A10 10 0 0022 12"/>
+</svg>
+
+</a>
+
+<a class="social" href="https://discord.gg/BGFqCSzhD" target="_blank">
+
+<svg viewBox="0 0 24 24">
+<path d="M20 4a16 16 0 00-4-1l-.2.4a14 14 0 00-3.6 0L12 3a16 16 0 00-4 1C5 8 4 12 4.5 16a16 16 0 004.8 2.4l1-1.5a10 10 0 01-1.6-.8l.4-.3c3 1.4 6.2 1.4 9.2 0l.4.3a10 10 0 01-1.6.8l1 1.5a16 16 0 004.8-2.4C24 12 23 8 20 4z"/>
+</svg>
+
+</a>
+
+<a class="social" href="https://tiktok.com" target="_blank">
+
+<svg viewBox="0 0 24 24">
+<path d="M19 8.2a7 7 0 01-4-1.3v6.2a5.1 5.1 0 11-5.1-5.1h.4v2.5h-.4a2.6 2.6 0 102.6 2.6V2h2.5a4.5 4.5 0 004 4.5z"/>
+</svg>
+
+</a>
+
+</footer>
+
+<script>
+
+/* MOBILE MENU */
+const menuBtn=document.getElementById('menu-btn');
+const nav=document.getElementById('nav');
+
+menuBtn.addEventListener('click',()=>{
+
+nav.classList.toggle('show');
+
+});
+
+/* SECTION REVEAL */
+const sections=document.querySelectorAll('.section');
+const navLinks=document.querySelectorAll('nav a');
+
+window.addEventListener('scroll',()=>{
+
+let current='';
+
+sections.forEach(section=>{
+
+const sectionTop=section.offsetTop-200;
+
+if(scrollY>=sectionTop){
+
+current=section.getAttribute('id');
+
+section.classList.add('show');
+
+}
+
+});
+
+navLinks.forEach(link=>{
+
+link.classList.remove('active');
+
+if(link.getAttribute('href').includes(current)){
+
+link.classList.add('active');
+
+}
+
+});
+
+});
+
+/* CLOSE MOBILE MENU */
+navLinks.forEach(link=>{
+
+link.addEventListener('click',()=>{
+
+nav.classList.remove('show');
+
+});
+
+});
+
+/* LOGO CLICK */
+document.querySelector('.logo').addEventListener('click',()=>{
+
+window.scrollTo({
+top:0,
+behavior:'smooth'
+});
+
+});
+
+/* RIPPLE EFFECT */
+const rippleButtons=document.querySelectorAll('.ripple-btn, nav a, .social');
+
+rippleButtons.forEach(button=>{
+
+button.style.position='relative';
+button.style.overflow='hidden';
+
+button.addEventListener('click',function(e){
+
+const oldRipple=this.querySelector('.ripple');
+
+if(oldRipple){
+oldRipple.remove();
+}
+
+const ripple=document.createElement('span');
+
+const rect=this.getBoundingClientRect();
+
+const size=Math.max(rect.width,rect.height);
+
+ripple.classList.add('ripple');
+
+ripple.style.width=size+'px';
+ripple.style.height=size+'px';
+
+ripple.style.left=(e.clientX-rect.left-size/2)+'px';
+ripple.style.top=(e.clientY-rect.top-size/2)+'px';
+
+this.appendChild(ripple);
+
+setTimeout(()=>{
+ripple.remove();
+},600);
+
+});
+
+});
+
+const clickSound = document.getElementById('click-sound');
+
+/* CLICK SOUND FOR BUTTONS + LINKS */
+document.querySelectorAll('button, nav a, .social').forEach(el => {
+  el.addEventListener('click', () => {
+    clickSound.currentTime = 0;
+    clickSound.play().catch(()=>{});
+  });
+});
+
+</script>
+
+</body>
+</html>
